@@ -19,13 +19,13 @@ class Comment
 
     /**
      * @ORM\ManyToOne(targetEntity=Ticket::class, inversedBy="comments")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, name="ticket_id", referencedColumnName="id")
      */
     private $ticketId;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class)
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, name="user_id", referencedColumnName="id")
      */
     private $userId;
 

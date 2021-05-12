@@ -26,11 +26,11 @@ final class Version20210511134656 extends AbstractMigration
         $this->addSql('ALTER TABLE comment DROP FOREIGN KEY FK_9474526C9D86650F');
         $this->addSql('DROP INDEX IDX_9474526C5774FDDC ON comment');
         $this->addSql('DROP INDEX IDX_9474526C9D86650F ON comment');
-        $this->addSql('ALTER TABLE comment ADD ticket_id_id INT NOT NULL, ADD user_id_id INT NOT NULL, DROP ticket_id, DROP user_id');
-        $this->addSql('ALTER TABLE comment ADD CONSTRAINT FK_9474526C5774FDDC FOREIGN KEY (ticket_id_id) REFERENCES ticket (id)');
-        $this->addSql('ALTER TABLE comment ADD CONSTRAINT FK_9474526C9D86650F FOREIGN KEY (user_id_id) REFERENCES `user` (id)');
-        $this->addSql('CREATE INDEX IDX_9474526C5774FDDC ON comment (ticket_id_id)');
-        $this->addSql('CREATE INDEX IDX_9474526C9D86650F ON comment (user_id_id)');
+        $this->addSql('ALTER TABLE comment ADD ticket_id INT NOT NULL, ADD user_id INT NOT NULL, DROP ticket_id, DROP user_id');
+        $this->addSql('ALTER TABLE comment ADD CONSTRAINT FK_9474526C5774FDDC FOREIGN KEY (ticket_id) REFERENCES ticket (id)');
+        $this->addSql('ALTER TABLE comment ADD CONSTRAINT FK_9474526C9D86650F FOREIGN KEY (user_id) REFERENCES `user` (id)');
+        $this->addSql('CREATE INDEX IDX_9474526C5774FDDC ON comment (ticket_id)');
+        $this->addSql('CREATE INDEX IDX_9474526C9D86650F ON comment (user_id)');
     }
 
     public function down(Schema $schema): void
@@ -41,7 +41,7 @@ final class Version20210511134656 extends AbstractMigration
         $this->addSql('ALTER TABLE comment DROP FOREIGN KEY FK_9474526C9D86650F');
         $this->addSql('DROP INDEX IDX_9474526C5774FDDC ON comment');
         $this->addSql('DROP INDEX IDX_9474526C9D86650F ON comment');
-        $this->addSql('ALTER TABLE comment ADD ticket_id INT NOT NULL, ADD user_id INT NOT NULL, DROP ticket_id_id, DROP user_id_id');
+        $this->addSql('ALTER TABLE comment ADD ticket_id INT NOT NULL, ADD user_id INT NOT NULL, DROP ticket_id, DROP user_id');
         $this->addSql('ALTER TABLE comment ADD CONSTRAINT FK_9474526C5774FDDC FOREIGN KEY (ticket_id) REFERENCES ticket (id) ON UPDATE NO ACTION ON DELETE NO ACTION');
         $this->addSql('ALTER TABLE comment ADD CONSTRAINT FK_9474526C9D86650F FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE NO ACTION');
         $this->addSql('CREATE INDEX IDX_9474526C5774FDDC ON comment (ticket_id)');

@@ -107,6 +107,11 @@ class User implements UserInterface
         $this->resolvedTickets = new ArrayCollection();
     }
 
+    public function __toString(): string
+    {
+       return $this->firstName; // TODO: Implement __toString() method.
+    }
+
     public function getId(): ?int
     {
         return $this->id;

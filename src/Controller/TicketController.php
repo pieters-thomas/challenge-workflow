@@ -12,16 +12,35 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[Route('/ticket')]
 class TicketController extends AbstractController
 {
+    /**
+     * @param TicketRepository $ticketRepository
+     * @param User $user
+     * @return Response
+     */
     #[Route('/', name: 'ticket_index', methods: ['GET'])]
-    public function showAllOpenTickets(TicketRepository $ticketRepository): Response
+    public function showAllOpenTickets(TicketRepository $ticketRepository, UserInterface $user): Response
     {
+        /**
+         * @var Ticket $ticket
+         */
+        $noTickets = "No open tickets to show";
+        $openTickets = [];
+        $allTickets = $user->getTickets();
+        foreach ($allTickets as $ticket) {
+            if ($ticket->getStatus() == 1) {
+                $openTickets[] = $ticket;
+            }
+        }
+
         return $this->render('ticket/index.html.twig', [
-            'tickets' => $ticketRepository->findAll(),
+            'tickets' => $openTickets,
         ]);
+
     }
 
     #[Route('/new', name: 'ticket_new', methods: ['GET', 'POST'])]

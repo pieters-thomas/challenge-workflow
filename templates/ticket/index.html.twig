@@ -10,11 +10,10 @@
             <tr>
                 <th>Id</th>
                 <th>Status</th>
+                <th>Subject</th>
+                <th>Description</th>
                 <th>Opened</th>
                 <th>Closed</th>
-                <th>Priority</th>
-                <th>Level</th>
-                <th>actions</th>
             </tr>
         </thead>
         <tbody>
@@ -22,10 +21,10 @@
             <tr>
                 <td>{{ ticket.id }}</td>
                 <td>{{ ticket.status }}</td>
+                <td>{{ ticket.subject }}</td>
+                <td>{{ ticket.description }}</td>
                 <td>{{ ticket.opened ? ticket.opened|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ ticket.closed ? ticket.closed|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ ticket.priority }}</td>
-                <td>{{ ticket.level }}</td>
                 <td>
                     <a href="{{ path('ticket_show', {'id': ticket.id}) }}">show</a>
                     <a href="{{ path('ticket_edit', {'id': ticket.id}) }}">edit</a>

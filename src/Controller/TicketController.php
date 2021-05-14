@@ -53,6 +53,8 @@ class TicketController extends AbstractController
     #[Route('/new', name: 'ticket_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $ticket = new Ticket();
         $form = $this->createForm(TicketType::class, $ticket);
         $form->handleRequest($request);
@@ -60,7 +62,7 @@ class TicketController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $ticket->setOpened(date_create(date("Y-m-d H:i:s")));
-
+            $ticket->setTicketOwner($user);
             $entityManager->persist($ticket);
             $entityManager->flush();
 
@@ -85,6 +87,7 @@ class TicketController extends AbstractController
         $comment->setTicketId($ticket);
         $comment->setUserId($user);
 
+        $comments = $ticket->getComments();
         $form = $this->createForm(CommentType::class, $comment);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -96,7 +99,7 @@ class TicketController extends AbstractController
         }
         return $this->render('ticket/show.html.twig', [
             'ticket' => $ticket,
-            'comment' => $comment,
+            'comments' => $comments,
             'form' => $form->createView()]);
     }
 

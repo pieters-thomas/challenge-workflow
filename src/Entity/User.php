@@ -109,7 +109,7 @@ class User implements UserInterface
 
     public function __toString(): string
     {
-        return $this->firstName; // TODO: Implement __toString() method.
+        return $this->firstName;
     }
 
     public function getId(): ?int

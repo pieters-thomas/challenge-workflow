@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Comment;
 use App\Entity\Ticket;
+use Exception;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -15,7 +16,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class TicketType extends AbstractType
 {
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -24,7 +25,6 @@ class TicketType extends AbstractType
             ->add('closed', HiddenType::class)
             ->add('priority', HiddenType::class, ['data' => 1])
             ->add('level', HiddenType::class, ['data' => 1])
-            ->add('ticketOwner')
             ->add('assignedAgent', HiddenType::class)
             ->add('closedBy', HiddenType::class)
             ->add('subject', TextType::class)

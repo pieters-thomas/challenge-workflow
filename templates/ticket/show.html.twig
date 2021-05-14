@@ -7,44 +7,53 @@
 
     <table class="table">
         <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ ticket.id }}</td>
-            </tr>
-            <tr>
-                <th>Status</th>
-                <td>{{ ticket.status }}</td>
-            </tr>
-            <tr>
-                <th>Opened</th>
-                <td>{{ ticket.opened ? ticket.opened|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Closed</th>
-                <td>{{ ticket.closed ? ticket.closed|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
+        <tr>
+            <th>Id</th>
+            <td>{{ ticket.id }}</td>
+            <th>Status</th>
+            {% if ticket.status == 1 or ticket.status == 2 or ticket.status == 3 %}
+            <td>Open</td>
+            {% endif %}
+            {% if ticket.status == 4 or ticket.status == 5 %}
+                <td>Closed</td>
+            {% endif %}
+            <th>Opened</th>
+            <td>{{ ticket.opened ? ticket.opened|date('Y-m-d H:i:s') : '' }}</td>
+            <th>{{ ticket.closed ? Closed : '' }}</th>
+            <td>{{ ticket.closed ? ticket.closed|date('Y-m-d H:i:s') : '' }}</td>
+            {% if is_granted('ROLE_AGENT') %}
                 <th>Priority</th>
                 <td>{{ ticket.priority }}</td>
-            </tr>
-            <tr>
                 <th>Level</th>
                 <td>{{ ticket.level }}</td>
-            </tr>
-            {{ form_start(form) }}
-            {{ form_widget(form) }}
-            <button class="btn">{{ button_label|default('Save') }}</button>
-            {{ form_end(form) }}
-            <tr>
-                <th>Content</th>
-                <td>{{ comment.content }}</td>
-            </tr>
+            {% endif %}
+        </tr>
+        <tr>
+            <th>Subject</th>
+            <td>{{ ticket.subject }}</td>
+        </tr>
+        <tr>
+            <th>Description</th>
+            <td>{{ ticket.description }}</td>
+        </tr>
         </tbody>
+    </table>
+    <table>
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn">{{ button_label|default('Save') }}</button>
+        {{ form_end(form) }}
+        <tr>
+            <th>Content</th>
+            {% for comment in comments %}
+                {% if not comment.private %}
+                <td>{{ comment.content }}</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
     </table>
 
     <a href="{{ path('ticket_index') }}">back to list</a>
-
-    <a href="{{ path('ticket_edit', {'id': ticket.id}) }}">edit</a>
 
     {{ include('ticket/_delete_form.html.twig') }}
 {% endblock %}

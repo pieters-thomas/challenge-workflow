@@ -19,7 +19,7 @@ class TicketController extends AbstractController
 {
     /**
      * @param TicketRepository $ticketRepository
-     * @param User $user
+     * @param UserInterface $user
      * @return Response
      */
     #[Route('/', name: 'ticket_index', methods: ['GET'])]
@@ -27,16 +27,23 @@ class TicketController extends AbstractController
     {
         /**
          * @var Ticket $ticket
+         * @var User $user
          */
         $noTickets = "No open tickets to show";
         $openTickets = [];
-        $allTickets = $user->getTickets();
-        foreach ($allTickets as $ticket) {
-            if ($ticket->getStatus() == 1) {
-                $openTickets[] = $ticket;
-            }
+        $role = $user->getRoles()[0];
+        switch ($role) {
+            case "ROLE_USER":
+                $allTickets = $user->getTickets();
+                foreach ($allTickets as $ticket) {
+                    if ($ticket->getStatus() == 1) {
+                        $openTickets[] = $ticket;
+                    }
+                }
+                return $this->render('ticket/index.html.twig', [
+                    'tickets' => $openTickets,
+                ]);
         }
-
         return $this->render('ticket/index.html.twig', [
             'tickets' => $openTickets,
         ]);

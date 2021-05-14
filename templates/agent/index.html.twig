@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ticket index{% endblock %}
+
+{% block body %}
+    <h1>Open Ticket index</h1>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Opened</th>
+            <th>Priority</th>
+            <th>actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for ticket in open_tickets %}
+            <tr>
+                <td>{{ ticket.id }}</td>
+                <td>{{ ticket.opened ? ticket.opened|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ ticket.priority }}</td>
+                <td>
+                    {{ include('agent/_assign_ticket.html.twig') }}
+                    {% if app.user.agentLevel == 1 %}
+                        {{ include('agent/_escalate_ticket.html.twig') }}
+                    {% endif %}
+                     <a href="{{ path('ticket_edit', {'id': ticket.id}) }}">Placeholder for close button</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <hr>
+    <div>
+    {% for ticket in assigned_tickets %}
+        <a href="{{ path('ticket_edit', {'id': ticket.id}) }}">
+            <div>
+                <p>P{{ ticket.priority }}</p>
+                <p>Ticket: {{ ticket.status }}</p>
+                <p>{{ ticket.id }}/{{ ticket.subject }}</p>
+            </div>
+        </a>
+        {% if app.user.agentLevel == 1 %}
+            {{ include('agent/_escalate_ticket.html.twig') }}
+        {% endif %}
+    {% else %}
+            <p>no assigned tickets found</p>
+    {% endfor %}
+    </div>
+{% endblock %}

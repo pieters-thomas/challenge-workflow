@@ -73,15 +73,26 @@ class TicketController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'ticket_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'ticket_show', methods: ['GET', 'POST'])]
     public function show(Request $request, Ticket $ticket): Response
     {
+        /**
+         * @var User $user
+         * @var Ticket $ticket
+         */
+        $user = $this->getUser();
         $comment = new Comment();
+        $comment->setTicketId($ticket);
+        $comment->setUserId($user);
+
         $form = $this->createForm(CommentType::class, $comment);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $this->getDoctrine()->getManager()->persist($comment);
             $this->getDoctrine()->getManager()->flush();
 
+            $this->redirectToRoute('ticket_show', ['id' => $ticket->getId()]);
         }
         return $this->render('ticket/show.html.twig', [
             'ticket' => $ticket,

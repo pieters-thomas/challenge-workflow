@@ -31,10 +31,12 @@
                 <th>Level</th>
                 <td>{{ ticket.level }}</td>
             </tr>
+
             {{ form_start(form) }}
             {{ form_widget(form) }}
             <button class="btn">{{ button_label|default('Save') }}</button>
             {{ form_end(form) }}
+
             <tr>
                 <th>Content</th>
                 <td>{{ comment.content }}</td>

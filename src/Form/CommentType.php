@@ -15,8 +15,6 @@ class CommentType extends AbstractType
         $builder
             ->add('private')
             ->add('content')
-            ->add('ticketId', HiddenType::class)
-            ->add('userId', HiddenType::class)
         ;
     }
 

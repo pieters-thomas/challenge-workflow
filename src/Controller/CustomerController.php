@@ -17,13 +17,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 
-
+/**
+ * @IsGranted("ROLE_USER")
+ */
 class CustomerController extends AbstractController
 {
-
-    /**
-     * @IsGranted("ROLE_USER")
-     */
+    
     #[Route('/', name: 'customer_index', methods: ['GET'])]
     public function index(TicketRepository $ticketRepository, UserInterface $user): Response
     {
@@ -50,13 +49,8 @@ class CustomerController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $comment->setUserId($user);
             $comment->setTicketId($ticket);
+            $ticket->setStatus(2);
 
-            if ($user->getRoles() === ['ROLE_AGENT'] && !$comment->getPrivate()) {
-                $ticket->setStatus(3);
-            }
-            if ($user->getRoles() === ['ROLE_USER']) {
-                $ticket->setStatus(2);
-            }
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($ticket);

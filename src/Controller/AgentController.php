@@ -8,16 +8,22 @@ use App\Entity\Ticket;
 use App\Form\CommentType;
 use App\Form\TicketType;
 use App\Repository\TicketRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+/**
+ * Class AgentController
+ * @package App\Controller
+ * @IsGranted("ROLE_AGENT", statusCode=404, message="Page not found")
+ */
 #[Route('/agent')]
 class AgentController extends AbstractController
 {
-    #[Route('/', name: 'agent_ticket_index', methods: ['GET'])]
+    #[Route('/', name: 'agent_index', methods: ['GET'])]
     public function showAllOpenTickets(TicketRepository $ticketRepository, UserInterface $user): Response
     {
         /** @var User $user */
@@ -42,10 +48,10 @@ class AgentController extends AbstractController
             $entityManager->flush();
 
         }
-        return $this->redirectToRoute('agent_ticket_index');
+        return $this->redirectToRoute('agent_index');
     }
 
-    #[Route('/escalate/{id}', name: 'ticket_escalate', methods: ['POST'])]
+    #[Route('/escalate/{id}', name: 'agent_escalate', methods: ['POST'])]
     public function escalateTicket(Request $request , Ticket $ticket, UserInterface $user): Response
     {
         if ($this->isCsrfTokenValid('escalate' . $ticket->getId(), $request->request->get('_token'))) {
@@ -63,24 +69,58 @@ class AgentController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
         }
-        return $this->redirectToRoute('agent_ticket_index');
+        return $this->redirectToRoute('agent_index');
     }
 
+    #[Route('/close/{id}', name: 'agent_close', methods: ['POST'])]
+    public function closeTicket(Request $request , Ticket $ticket, UserInterface $user): Response
+    {
+        if ($this->isCsrfTokenValid('close' . $ticket->getId(), $request->request->get('_token'))) {
 
+            /** @var User $user */
+            $closed = $user->getClosedTickets();
+            $user->setClosedTickets( ++$closed);
 
-    #[Route('/{id}', name: 'ticket_show', methods: ['GET'])]
+            $ticket->setAssignedAgent(null);
+            $ticket->setClosedBy($user);
+            $ticket->setStatus(4);
+            $ticket->setClosed(date_create(date("Y-m-d H:i:s")));
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($ticket);
+            $entityManager->persist($user);
+            $entityManager->flush();
+        }
+        return $this->redirectToRoute('agent_index');
+    }
+
+    #[Route('/{id}', name: 'agent_show', methods: ['GET','POST'])]
     public function show(Request $request, Ticket $ticket): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+
         $comment = new Comment();
         $form = $this->createForm(CommentType::class, $comment);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            $comment->setUserId($user);
+            $comment->setTicketId($ticket);
+
+            if ($user->getRoles() === ['ROLE_AGENT'] && !$comment->getPrivate()) {
+                $ticket->setStatus(3);
+            }
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($ticket);
+            $entityManager->persist($comment);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('agent_show', ['id' => $ticket->getId()]);
         }
-        return $this->render('ticket/show.html.twig', [
+        return $this->render('agent/show.html.twig', [
             'ticket' => $ticket,
-            'comment' => $comment,
             'form' => $form->createView()]);
     }
 
@@ -101,5 +141,4 @@ class AgentController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-
 }

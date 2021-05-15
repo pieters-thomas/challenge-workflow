@@ -38,16 +38,13 @@
     <hr>
     <div>
     {% for ticket in assigned_tickets %}
-        <a href="{{ path('ticket_edit', {'id': ticket.id}) }}">
+        <a href="{{ path('agent_show', {'id': ticket.id}) }}">
             <div>
                 <p>P{{ ticket.priority }}</p>
                 <p>Ticket: {{ ticket.status }}</p>
                 <p>{{ ticket.id }}/{{ ticket.subject }}</p>
             </div>
         </a>
-        {% if app.user.agentLevel == 1 %}
-            {{ include('agent/_escalate_ticket.html.twig') }}
-        {% endif %}
     {% else %}
             <p>no assigned tickets found</p>
     {% endfor %}

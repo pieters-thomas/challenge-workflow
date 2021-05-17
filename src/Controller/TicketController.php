@@ -8,31 +8,46 @@ use App\Entity\Ticket;
 use App\Form\CommentType;
 use App\Form\TicketType;
 use App\Repository\TicketRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-
 #[Route('/ticket')]
 class TicketController extends AbstractController
 {
-
+    /**
+     * @param TicketRepository $ticketRepository
+     * @param UserInterface $user
+     * @return Response
+     */
     #[Route('/', name: 'ticket_index', methods: ['GET'])]
-    #[IsGranted (['ROLE_USER'])]
-    public function showAllOpenTickets(TicketRepository $ticketRepository, UserInterface $user): ?Response
+    public function showAllOpenTickets(TicketRepository $ticketRepository, UserInterface $user): Response
     {
         /**
          * @var Ticket $ticket
          * @var User $user
-         *
          */
+        $noTickets = "No open tickets to show";
+        $openTickets = [];
         $role = $user->getRoles()[0];
+        switch ($role) {
+            case "ROLE_USER":
+                $allTickets = $user->getTickets();
+                foreach ($allTickets as $ticket) {
+                    if ($ticket->getStatus() == 1) {
+                        $openTickets[] = $ticket;
+                    }
+                }
+                return $this->render('ticket/index.html.twig', [
+                    'tickets' => $openTickets,
+                ]);
+        }
         return $this->render('ticket/index.html.twig', [
-            'tickets' => $ticketRepository->findBy(['ticketOwner' => $this->getUser()]),
+            'tickets' => $openTickets,
         ]);
+
     }
 
     #[Route('/new', name: 'ticket_new', methods: ['GET', 'POST'])]
@@ -63,27 +78,21 @@ class TicketController extends AbstractController
     #[Route('/{id}', name: 'ticket_show', methods: ['GET', 'POST'])]
     public function show(Request $request, Ticket $ticket): Response
     {
-        /**
-         * @var User $user
-         * @var Ticket $ticket
-         */
+        /** @var User $user */
         $user = $this->getUser();
         $comment = new Comment();
-        $comment->setTicketId($ticket);
-        $comment->setUserId($user);
-
         $comments = $ticket->getComments();
         $form = $this->createForm(CommentType::class, $comment);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $comment->setContent($user->getFirstName() . ' ' . $comment->getContent());
-            $this->getDoctrine()->getManager()->persist($comment);
-            $this->getDoctrine()->getManager()->flush();
-
-            $this->redirectToRoute('ticket_show', ['id' => $ticket->getId()]);
+                $entityManager = $this->getDoctrine()->getManager();
+                $comment->setTicketId($ticket);
+                $comment->setUserId($user);
+                $entityManager->persist($comment);
+                $entityManager->flush();
+                return $this->redirectToRoute('ticket_show',['id'=> $ticket->getId()]);
         }
         return $this->render('ticket/show.html.twig', [
-            'user' => $user,
             'ticket' => $ticket,
             'comments' => $comments,
             'form' => $form->createView()]);

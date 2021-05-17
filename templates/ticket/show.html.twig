@@ -47,15 +47,13 @@
             <th>Content</th>
             {% for comment in comments %}
                 {% if not comment.private %}
-        <tr><td>{{ comment.content }}</td></tr>
+                <td>{{ comment.content }}</td>
                 {% endif %}
             {% endfor %}
         </tr>
     </table>
 
-        <a href="{{ path('ticket_index') }}">back to list</a>
-
-
+    <a href="{{ path('ticket_index') }}">back to list</a>
 
     {{ include('ticket/_delete_form.html.twig') }}
 {% endblock %}

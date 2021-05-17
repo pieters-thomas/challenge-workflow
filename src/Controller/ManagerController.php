@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+
 use App\Entity\Ticket;
 use App\Entity\User;
 use App\Repository\TicketRepository;
@@ -143,6 +144,7 @@ class ManagerController extends AbstractController
         ]);
     }
 
+
     public function getTicketsForAgent(TicketRepository $ticketRepository, UserInterface $user): array
     {
         $tickets_for_agent = [];
@@ -178,6 +180,28 @@ class ManagerController extends AbstractController
                 $agents[] = $user;
         }
         return $agents; //$userRepository->findBy(['roles' => 'ROLE_AGENT'],['firstName'=>'ASC']);
+    }
+
+
+    #[Route('/un-assign-all/', name: 'unassign_all')]
+    public function unAssignAll(TicketRepository $repository): Response
+    {
+        $tickets = $repository->findAll();
+        $entityManager = $this->getDoctrine()->getManager();
+
+        foreach ($tickets as $ticket)
+        {
+            if($ticket->getAssignedAgent() !== null && in_array($ticket->getStatus(), [2, 3], true))
+            {
+                $ticket->setAssignedAgent(null);
+                $ticket->setStatus(1);
+                $entityManager->persist($ticket);
+            }
+        }
+        $entityManager->flush();
+
+        return $this->redirectToRoute('manager');
+
     }
 
 }

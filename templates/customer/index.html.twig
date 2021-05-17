@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ticket index{% endblock %}
+
+{% block body %}
+    {% set status =['null','open','in progress','awaiting response', 'closed', 'will not fix'] %}
+    <h1>My Tickets</h1>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Status</th>
+            <th>Subject</th>
+            <th>Opened</th>
+            <th>Closed</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for ticket in tickets %}
+            <tr>
+                <td>{{ ticket.id }}</td>
+                <td>{{ status[ticket.status] }}</td>
+                <td>{{ ticket.subject }}</td>
+                <td>{{ ticket.opened ? ticket.opened|date('Y-m-d') : '' }}</td>
+                <td>{{ ticket.closed ? ticket.closed|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    {% if ticket.status == 3 %}
+                        <a class="btn btn-warning" href="{{ path('ticket_details', {'id': ticket.id}) }}">Respond</a>
+                    {% endif %}
+                    <a class="btn btn-warning" href="{{ path('ticket_details', {'id': ticket.id}) }}">Details</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('ticket_new') }}">Create new</a>
+{% endblock %}

@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('agent_close', {'id': ticket.id}) }}">
+    <input type="hidden" name="_token" value="{{ csrf_token('close' ~ ticket.id) }}">
+    <button class="btn btn-danger col-1">Close</button>
+</form>

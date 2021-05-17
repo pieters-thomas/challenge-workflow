@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ticket{% endblock %}
+
+{% block body %}
+    {% set status ={1:'open',2:'in progress',3:'awaiting response', 4:'closed', 5:'will not fix'} %}
+    <h1>Ticket</h1>
+    <div>
+
+    </div>
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>Id</th>
+            <td>{{ ticket.id }}</td>
+
+            <th>Status</th>
+            <td>{{ status[ticket.status] }}</td>
+
+            <th>Opened</th>
+            <td>{{ ticket.opened ? ticket.opened|date('Y-m-d H:i:s') : '' }}</td>
+
+            <th>{{ ticket.closed ? 'Closed' : '' }}</th>
+            <td>{{ ticket.closed ? ticket.closed|date('Y-m-d H:i:s') : '' }}</td>
+
+            <th>Priority</th>
+            <td>{{ ticket.priority }}</td>
+
+            <th>Level</th>
+            <td>{{ ticket.level }}</td>
+        </tr>
+        <tr>
+            <th>Subject</th>
+            <td>{{ ticket.subject }}</td>
+        </tr>
+        <tr>
+            <th>Description</th>
+            <td>{{ ticket.description }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div>
+        <h2>Content</h2>
+        <b>{{ ticket.ticketOwner }}:</b>
+        <div>{{ ticket.description }}</div>
+        {% for comment in ticket.comments %}
+            <b>{{ comment.userId }}:</b>
+            <div>{{ comment.content }}</div>
+        {% endfor %}
+    </div>
+
+        {{ include('manager/_deny_fix.html.twig') }}
+
+    <a href="{{ path('manager') }}">back to list</a>
+
+{% endblock %}

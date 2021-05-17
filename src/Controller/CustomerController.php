@@ -20,10 +20,11 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * @IsGranted("ROLE_USER")
  */
+#[Route('/customer')]
 class CustomerController extends AbstractController
 {
     
-    #[Route('/', name: 'customer_index', methods: ['GET'])]
+    #[Route('/customer', name: 'customer_index', methods: ['GET'])]
     public function index(TicketRepository $ticketRepository, UserInterface $user): Response
     {
         /** @var User $user */

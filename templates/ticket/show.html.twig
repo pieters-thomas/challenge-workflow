@@ -19,8 +19,10 @@
             {% endif %}
             <th>Opened</th>
             <td>{{ ticket.opened ? ticket.opened|date('Y-m-d H:i:s') : '' }}</td>
-            <th>{{ ticket.closed ? Closed : '' }}</th>
+
+            <th>{{ ticket.closed ? 'Closed' : '' }}</th>
             <td>{{ ticket.closed ? ticket.closed|date('Y-m-d H:i:s') : '' }}</td>
+
             {% if is_granted('ROLE_AGENT') %}
                 <th>Priority</th>
                 <td>{{ ticket.priority }}</td>

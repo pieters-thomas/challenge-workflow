@@ -19,11 +19,12 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @IsGranted("ROLE_USER")
+ * @var Ticket $ticket
  */
 #[Route('/customer')]
 class CustomerController extends AbstractController
 {
-    
+
     #[Route('/customer', name: 'customer_index', methods: ['GET'])]
     public function index(TicketRepository $ticketRepository, UserInterface $user): Response
     {
@@ -65,5 +66,29 @@ class CustomerController extends AbstractController
             'form' => $form->createView()]);
     }
 
+    #[Route('/{id}/reopenTicket', name: 'ticket_reopen', methods: ['GET', 'POST'])]
+    public function reopenTicket(TicketRepository $ticketRepository, Ticket $ticket)
+    {
+        /** @var User $user
+         * @var Ticket $ticket
+         */
+
+        if ($ticket->getClosed()) {
+            $timeNow = date_create(date("Y-m-d H:i:s"));
+            $timeDiff = $ticket->getClosed()->diff($timeNow);
+            if (($timeDiff->h == 0) && ($timeDiff->i < 60)) {
+                $ticket->setClosed(null);
+                $ticket->setClosedBy(null);
+                $ticket->setOpened($timeNow);
+                $ticket->setStatus(1);
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($ticket);
+                $entityManager->flush();
+
+            }
+        }
+            
+        return $this->redirectToRoute('ticket_index');
+    }
 
 }

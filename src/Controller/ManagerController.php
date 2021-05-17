@@ -37,7 +37,7 @@ class ManagerController extends AbstractController
         $open_tickets = 0;
         $closed_tickets = 0;
 
-        // find the agents resporting to this manager
+        // find the agents reporting to this manager
         $agents = $this->getAgentsForManager($userRepository, $user);
         $all_agents = $this->getAllAgents($userRepository);
 

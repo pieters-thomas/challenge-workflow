@@ -8,6 +8,7 @@ use App\Entity\Ticket;
 use App\Form\CommentType;
 use App\Form\TicketType;
 use App\Repository\TicketRepository;
+use MongoDB\BSON\UTCDateTime;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,6 +31,7 @@ class TicketController extends AbstractController
          *
          */
         $role = $user->getRoles()[0];
+
         return $this->render('ticket/index.html.twig', [
             'tickets' => $ticketRepository->findBy(['ticketOwner' => $this->getUser()]),
         ]);
@@ -118,4 +120,6 @@ class TicketController extends AbstractController
 
         return $this->redirectToRoute('ticket_index');
     }
+
+
 }

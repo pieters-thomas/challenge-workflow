@@ -1,4 +1,4 @@
 <form method="post" action="{{ path('agent_assign', {'id': ticket.id, 'agent': app.user.id}) }}">
     <input type="hidden" name="_token" value="{{ csrf_token('assign' ~ ticket.id) }}">
-    <button class="btn btn-danger col-1">Claim</button>
+    <button class="btn btn-danger col-2">Claim</button>
 </form>

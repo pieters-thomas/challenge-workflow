@@ -12,6 +12,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Ticket
 {
+    public const OPEN = 1;
+    public const CLOSED = 2;
+    public const WONTFIX = 3;
+
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

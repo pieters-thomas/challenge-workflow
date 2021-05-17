@@ -23,7 +23,7 @@ class TicketType extends AbstractType
         $builder
             ->add('status', HiddenType::class, ['data' => 1, 'attr' => ['value' => 1],])
             ->add('closed', HiddenType::class)
-            ->add('priority', HiddenType::class, ['data' => 1])
+            ->add('priority', HiddenType::class, ['data' => 3])
             ->add('level', HiddenType::class, ['data' => 1])
             ->add('assignedAgent', HiddenType::class)
             ->add('closedBy', HiddenType::class)

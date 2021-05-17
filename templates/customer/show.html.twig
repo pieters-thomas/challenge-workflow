@@ -3,7 +3,7 @@
 {% block title %}Ticket{% endblock %}
 
 {% block body %}
-    {% set status =['null','open','in progress','awaiting response', 'closed', 'will not fix'] %}
+    {% set status ={1:'open',2:'in progress',3:'awaiting response', 4:'closed', 5:'ticket denied'} %}
     <h1>Ticket</h1>
     <div>
 
@@ -18,14 +18,9 @@
 
             <th>Opened</th>
             <td>{{ ticket.opened ? ticket.opened|date('Y-m-d H:i:s') : '' }}</td>
-            <th>{{ ticket.closed ? Closed : '' }}</th>
+            <th>{{ ticket.closed ? 'Closed' : '' }}</th>
             <td>{{ ticket.closed ? ticket.closed|date('Y-m-d H:i:s') : '' }}</td>
-            {% if is_granted('ROLE_AGENT') %}
-                <th>Priority</th>
-                <td>{{ ticket.priority }}</td>
-                <th>Level</th>
-                <td>{{ ticket.level }}</td>
-            {% endif %}
+
         </tr>
         <tr>
             <th>Subject</th>
@@ -43,28 +38,10 @@
         <div>{{ ticket.description }}</div>
 
         {% for comment in ticket.comments %}
-            {% if not comment.private and is_granted('ROLE_USER') %}
                 <div>{{ comment.userId }}:</div>
                 <div>{{ comment.content }}</div>
-            {% elseif is_granted('ROLE_AGENT') %}
-                <div>{{ comment.userId }}:</div>
-                <div>{{ comment.content }}</div>
-            {% endif %}
         {% endfor %}
     </div>
-
-    {% if ticket.status in [2,3] and ticket.assignedAgent == app.user %}
-        {{ form_start(form) }}
-
-        {{ form_row(form.content) }}
-        {{ form_row(form.private) }}
-
-        <button class="btn">{{ button_label|default('Save') }}</button>
-
-        {{ form_end(form) }}
-
-        <a href="{{ path('agent_ticket_index') }}">back to list</a>
-    {% endif %}
 
     {% if ticket.status == 3 and ticket.ticketOwner == app.user %}
         {{ form_start(form) }}
@@ -76,7 +53,9 @@
 
         {{ form_end(form) }}
 
-        <a href="{{ path('customer_index') }}">back to list</a>
     {% endif %}
-
+    {% if ticket.closed %}
+        <a class="btn btn-danger" href="{{ path('ticket_reopen', {'id': ticket.id}) }}">Reopen</a>
+    {% endif %}
+    <a href="{{ path('customer_index') }}">back to list</a>
 {% endblock %}

@@ -21,46 +21,46 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class TicketController extends AbstractController
 {
 
-    #[Route('/', name: 'ticket_index', methods: ['GET'])]
-    #[IsGranted (['ROLE_USER'])]
-    public function showAllOpenTickets(TicketRepository $ticketRepository, UserInterface $user): ?Response
-    {
-        /**
-         * @var Ticket $ticket
-         * @var User $user
-         *
-         */
-        $role = $user->getRoles()[0];
+//    #[Route('/', name: 'ticket_index', methods: ['GET'])]
+//    #[IsGranted (['ROLE_USER'])]
+//    public function showAllOpenTickets(TicketRepository $ticketRepository, UserInterface $user): ?Response
+//    {
+//        /**
+//         * @var Ticket $ticket
+//         * @var User $user
+//         *
+//         */
+//        $role = $user->getRoles()[0];
+//
+//        return $this->render('ticket/index.html.twig', [
+//            'tickets' => $ticketRepository->findBy(['ticketOwner' => $this->getUser()]),
+//        ]);
+//    }
 
-        return $this->render('ticket/index.html.twig', [
-            'tickets' => $ticketRepository->findBy(['ticketOwner' => $this->getUser()]),
-        ]);
-    }
-
-    #[Route('/new', name: 'ticket_new', methods: ['GET', 'POST'])]
-    public function new(Request $request): Response
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-        $ticket = new Ticket();
-        $form = $this->createForm(TicketType::class, $ticket);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $ticket->setOpened(date_create(date("Y-m-d H:i:s")));
-            $ticket->setTicketOwner($user);
-            $entityManager->persist($ticket);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('ticket_index');
-        }
-
-        return $this->render('ticket/new.html.twig', [
-            'ticket' => $ticket,
-            'form' => $form->createView(),
-        ]);
-    }
+//    #[Route('/new', name: 'ticket_new', methods: ['GET', 'POST'])]
+//    public function new(Request $request): Response
+//    {
+//        /** @var User $user */
+//        $user = $this->getUser();
+//        $ticket = new Ticket();
+//        $form = $this->createForm(TicketType::class, $ticket);
+//        $form->handleRequest($request);
+//
+//        if ($form->isSubmitted() && $form->isValid()) {
+//            $entityManager = $this->getDoctrine()->getManager();
+//            $ticket->setOpened(date_create(date("Y-m-d H:i:s")));
+//            $ticket->setTicketOwner($user);
+//            $entityManager->persist($ticket);
+//            $entityManager->flush();
+//
+//            return $this->redirectToRoute('ticket_index');
+//        }
+//
+//        return $this->render('ticket/new.html.twig', [
+//            'ticket' => $ticket,
+//            'form' => $form->createView(),
+//        ]);
+//    }
 
     #[Route('/{id}', name: 'ticket_show', methods: ['GET', 'POST'])]
     public function show(Request $request, Ticket $ticket): Response
@@ -109,17 +109,17 @@ class TicketController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'ticket_delete', methods: ['POST'])]
-    public function delete(Request $request, Ticket $ticket): Response
-    {
-        if ($this->isCsrfTokenValid('delete' . $ticket->getId(), $request->request->get('_token'))) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->remove($ticket);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('ticket_index');
-    }
+//    #[Route('/{id}', name: 'ticket_delete', methods: ['POST'])]
+//    public function delete(Request $request, Ticket $ticket): Response
+//    {
+//        if ($this->isCsrfTokenValid('delete' . $ticket->getId(), $request->request->get('_token'))) {
+//            $entityManager = $this->getDoctrine()->getManager();
+//            $entityManager->remove($ticket);
+//            $entityManager->flush();
+//        }
+//
+//        return $this->redirectToRoute('ticket_index');
+//    }
 
 
 }

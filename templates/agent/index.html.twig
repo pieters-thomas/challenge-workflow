@@ -38,7 +38,7 @@
     <hr>
     <div>
     {% for ticket in assigned_tickets %}
-        <a href="{{ path('ticket_edit', {'id': ticket.id}) }}">
+        <a href="{{ path('ticket_show', {'id': ticket.id}) }}">
             <div>
                 <p>P{{ ticket.priority }}</p>
                 <p>Ticket: {{ ticket.status }}</p>

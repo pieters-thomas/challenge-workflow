@@ -26,6 +26,7 @@
                 <td>{{ ticket.opened ? ticket.opened|date('Y-m-d H:i:s') : '' }}</td>
                 {% if (ticket.closed) %}
                     <td><a href="{{ path('ticket_reopen', {'id': ticket.id}) }}">{{ ticket.closed ? ticket.closed|date('Y-m-d H:i:s') : '' }}</a></td>
+
                 {% endif %}
                 <td>
                     <a href="{{ path('ticket_show', {'id': ticket.id}) }}">show</a>

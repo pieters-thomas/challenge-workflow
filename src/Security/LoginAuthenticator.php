@@ -96,18 +96,18 @@ class LoginAuthenticator extends AbstractFormLoginAuthenticator implements Passw
             return new RedirectResponse($targetPath);
         }
 
-        $mainRole = $token->getUser()->getRoles()[0];
+        $mainRole = $token->getUser()->getRoles();
 
-        if ($mainRole === 'ROLE_AGENT') {
+        if ($mainRole === ['ROLE_AGENT']) {
             //@todo change this to agent home later.
             return new RedirectResponse($this->urlGenerator->generate('agent_index'));
         }
 
-        if ($mainRole === 'ROLE_MANAGER') {
+        if ($mainRole === ['ROLE_MANAGER']) {
             return new RedirectResponse($this->urlGenerator->generate('manager'));
         }
         //@todo change this to agent home later.
-        return new RedirectResponse($this->urlGenerator->generate('ticket_index'));
+        return new RedirectResponse($this->urlGenerator->generate('customer_index'));
 
     }
 

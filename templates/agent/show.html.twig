@@ -15,7 +15,7 @@
             <td>{{ ticket.id }}</td>
 
             <th>Status</th>
-            <td>{{ status(ticket.status) }}</td>
+            <td>{{ status[ticket.status] }}</td>
 
             <th>Opened</th>
             <td>{{ ticket.opened ? ticket.opened|date('Y-m-d H:i:s') : '' }}</td>

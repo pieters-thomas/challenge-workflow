@@ -52,7 +52,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @param User $user
+     * @param UserRepository $userRepository
      * @return Response
      */
     #[Route('/show', name: 'user_show', methods: ['GET'])]
@@ -74,7 +74,7 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('user_index');
+            return $this->redirectToRoute('manager_index');
         }
 
         return $this->render('user/edit.html.twig', [

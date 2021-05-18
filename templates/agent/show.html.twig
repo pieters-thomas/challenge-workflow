@@ -3,7 +3,7 @@
 {% block title %}Ticket{% endblock %}
 
 {% block body %}
-    {% set status =['null','open','in progress','awaiting response', 'closed', 'will not fix'] %}
+    {% set status ={1:'open',2:'in progress',3:'awaiting response', 4:'closed', 5:'will not fix'} %}
     <h1>Ticket</h1>
     <div>
 
@@ -15,7 +15,7 @@
             <td>{{ ticket.id }}</td>
 
             <th>Status</th>
-            <td>{{ status[ticket.status] }}</td>
+            <td>{{ status(ticket.status) }}</td>
 
             <th>Opened</th>
             <td>{{ ticket.opened ? ticket.opened|date('Y-m-d H:i:s') : '' }}</td>

@@ -32,14 +32,14 @@ class ManagerController extends AbstractController
     #[Route('/manager', name: 'manager_index', methods: ['GET', 'POST'])]
     public function dashboard(UserRepository $userRepository, TicketRepository $ticketRepository, UserInterface $user): Response
     {
-        if($_POST !== null)
+        //todo Replace with and add logic to properly handle form
+        if(!empty($_POST))
         {
-            //todo Replace with and add logic to properly handle form
             /** @var Ticket $ticket $ticket */
-            $ticket = $_POST['ticket'];
-            $ticket->setPriority($_POST['priority']);
-            $ticket->setPriority($_POST['agent']);
-
+            $ticket = $ticketRepository->findOneBy(['id'=> $_POST['ticket']]);
+            $newAgent = $userRepository->findOneBy(['id'=>$_POST['agentId']]);
+            $ticket->setPriority( (int) $_POST['priority'] );
+            $ticket->setAssignedAgent($newAgent);
         }
 
         /** @var User $user */
@@ -102,7 +102,7 @@ class ManagerController extends AbstractController
     }
 
 
-    #[Route('/will-not-fix/', name: 'will-not-fix', methods: ['post'])]
+    #[Route('/will-not-fix/{id}', name: 'will-not-fix', methods: ['GET','POST'])]
     public function Deny (Ticket $ticket, Request $request): Response
     {
         /** @var User $user */
@@ -128,9 +128,9 @@ class ManagerController extends AbstractController
             $entityManager->persist($comment);
             $entityManager->flush();
 
-            return $this->redirectToRoute('manager');
+            return $this->redirectToRoute('manager_index');
         }
-        return $this->render('manager/show.html.twig', [
+        return $this->render('manager/_deny_fix.html.twig', [
             'ticket' => $ticket,
             'form' => $form->createView()]);
 

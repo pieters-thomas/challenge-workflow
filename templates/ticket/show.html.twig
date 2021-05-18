@@ -11,16 +11,18 @@
             <th>Id</th>
             <td>{{ ticket.id }}</td>
             <th>Status</th>
-            {% if ticket.status == 1 or ticket.status == 2 or ticket.status == 3 %}
+            {% if ticket.status in [1,2,3] %}
             <td>Open</td>
             {% endif %}
-            {% if ticket.status == 4 or ticket.status == 5 %}
+            {% if ticket.status in [4,5] %}
                 <td>Closed</td>
             {% endif %}
             <th>Opened</th>
             <td>{{ ticket.opened ? ticket.opened|date('Y-m-d H:i:s') : '' }}</td>
-            <th>{{ ticket.closed ? Closed : '' }}</th>
+
+            <th>{{ ticket.closed ? 'Closed' : '' }}</th>
             <td>{{ ticket.closed ? ticket.closed|date('Y-m-d H:i:s') : '' }}</td>
+
             {% if is_granted('ROLE_AGENT') %}
                 <th>Priority</th>
                 <td>{{ ticket.priority }}</td>

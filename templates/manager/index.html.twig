@@ -37,35 +37,28 @@
                 border: 1px solid black;
             }
         }
-
-
     </style>
-
-
-    <!-- Custom styles for this template -->
-    <link href="grid.css" rel="stylesheet">
-    <link href="manager.css" rel="stylesheet">
-
     <main>
         <div class="container">
             <div class="row mb-3">
-                <div class="col-4"><h1>Manager View</h1></div>
+                <div class="col-4"><h1>Manager View ({{ loggedInManager }})</h1></div>
                 <div class="col-6 themed-grid-col"> </div>
-                <div class="col-2 themed-grid-col"><a class="btn btn-primary" href="/manager?action=create-new-agent" role="button">Create New Agent</a> </div>
+                <div class="col-2 themed-grid-col"><a class="btn btn-primary" href="{{ path('agent_new') }}" role="button">Create New Agent</a> </div>
+                <div class="col-2 themed-grid-col"><a class="btn btn-primary" href="{{ path('user_show') }}" role="button">All Agents</a> </div>
             </div>
 
             <p class="lead">Below is an overview of Tickets worked on by your team</p>
 
-            <h2 class="mt-4">Ticket Volume</h2>
+            <h2 class="mt-4">Ticket Volume For Team</h2>
             <div class="row mb-3">
-                <div class="col-2 themed-grid-col table_header">Open Tickets: 4</div>
-                <div class="col-2 themed-grid-col table_header">Closed Tickets: 36</div>
+                <div class="col-2 themed-grid-col table_header">Open Tickets: {{ openTickets }}</div>
+                <div class="col-2 themed-grid-col table_header">Closed Tickets: {{ closedTickets }}</div>
                 <div class="col-3 themed-grid-col table_header">Reopened Tickets: 1 (2,7%)</div>
             </div>
 
-
+            <!-- ACTIVE TICKETS -->
             <h2 class="mt-4">Active Tickets</h2>
-            <p>There are five tiers to the Bootstrap grid system, one for each range of devices we support. Each tier starts at a minimum viewport size and automatically applies to the larger devices unless overridden.</p>
+            <p>These are tickets assigned to agents reporting to you. You can reassign it to any other agent.</p>
 
             <div class="row mb-3">
                 <div class="col-1 themed-grid-col table_header">Ticket #</div>
@@ -76,23 +69,23 @@
                 <div class="col-1 themed-grid-col table_header">Agent</div>
                 <div class="col-2 themed-grid-col table_header">Actions</div>
             </div>
-
+            {% for agent,ticket in ticketOverview %}
             <div class="row mb-3">
-                <div class="col-1 themed-grid-col table_row"><a href="/Ticket?12345">12345</a></div>
-                <div class="col-1 themed-grid-col table_row">1</div>
-                <div class="col-2 themed-grid-col table_row">Arab Bank</div>
-                <div class="col-3 themed-grid-col table_row">Frequent Crashes</div>
+                <div class="col-1 themed-grid-col table_row"><a href="/ticket/{{ ticket.id }}">{{ ticket.id }}</a></div>
+                <div class="col-1 themed-grid-col table_row">{{ ticket.priority }}</div>
+                <div class="col-2 themed-grid-col table_row">{{ ticket.owner }}</div>
+                <div class="col-3 themed-grid-col table_row">{{ ticket.subject }}</div>
                 <div class="col-2 themed-grid-col table_row">
                     <div class="col-1 themed-grid-col table_row">
                         <!-- Status -->
                         <div class="dropdown">
                             <a class="btn btn-light dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Customer Pending
+                                {{ ticket.status }}
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                <li><a class="dropdown-item" href="/manager?action=change_status&new_status=agent_pending">Agent Pending</a></li>
-                                <li><a class="dropdown-item" href="/manager?action=change_status&new_status=close_pending">Close Pending</a></li>
-                                <li><a class="dropdown-item" href="/manager?action=change_status&new_status=solution_provided">Solution Provided</a></li>
+                                {% for available_status in availableStatuses %}
+                                    <li><a class="dropdown-item" href="#">{{ available_status.name }}</a></li>
+                                {% endfor %}
                             </ul>
                         </div>
                         <!-- End Status -->
@@ -102,126 +95,74 @@
                     <!-- Agents -->
                     <div class="dropdown">
                         <a class="btn btn-success dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Jose
+                            {{ agent }}
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <li><a class="dropdown-item" href="/manager?action=change_agent&new_agent_id=1">Jose</a></li>
-                            <li><a class="dropdown-item" href="/manager?action=change_agent&new_agent_id=2">Hana</a></li>
-                            <li><a class="dropdown-item" href="/manager?action=change_agent&new_agent_id=3">Kamal</a></li>
+                            {% for available_agent in availableAgents %}
+                                <!-- /manager/update/{ticket}/agent/{agent} -->
+                                <li><a class="dropdown-item" href="#">{{ available_agent.name }}</a></li>
+                            {% endfor %}
                         </ul>
                     </div>
                     <!-- End Agents -->
                 </div>
-                <div class="col-2 themed-grid-col table_row"><a class="btn btn-primary" href="/manager?action=del&Ticket=12345" role="button">Close</a> <a class="btn btn-danger" href="/manager?action=wont-fix&Ticket=12348" role="button">Won't Fix</a></div>
+                <div class="col-2 themed-grid-col table_row"><a class="btn btn-primary" href="/manager?action=close&ticket={{ ticket.id }}" role="button">Close</a> <a class="btn btn-danger" href="/manager?action=wont-fix&ticket={{ ticket.id }}" role="button">Won't Fix</a></div>
             </div>
+            {% endfor %}
+
+            <!-- UNASSIGNED TICKETS -->
+            <h2 class="mt-4">Unassigned Tickets</h2>
+            <p>These tickets are not yet assigned to any agent. Use the dropdown to assign it to an agent.</p>
 
             <div class="row mb-3">
-                <div class="col-1 themed-grid-col table_row"><a href="/Ticket/?12346">12346</a></div>
-                <div class="col-1 themed-grid-col table_row">3</div>
-                <div class="col-2 themed-grid-col table_row">Arab Bank</div>
-                <div class="col-3 themed-grid-col table_row">Cannot add new device</div>
-                <div class="col-2 themed-grid-col table_row">
-                    <!-- Status -->
-                    <div class="dropdown">
-                        <a class="btn btn-light dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Customer Pending
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <li><a class="dropdown-item" href="/manager?action=change_status&new_status=agent_pending">Agent Pending</a></li>
-                            <li><a class="dropdown-item" href="/manager?action=change_status&new_status=close_pending">Close Pending</a></li>
-                            <li><a class="dropdown-item" href="/manager?action=change_status&new_status=solution_provided">Solution Provided</a></li>
-                        </ul>
-                    </div>
-                    <!-- End Status -->
-                </div>
-                <div class="col-1 themed-grid-col table_row">
-                    <!-- Agents -->
-                    <div class="dropdown">
-                        <a class="btn btn-success dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Jose
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <li><a class="dropdown-item" href="/manager?action=change_agent&new_agent_id=1">Jose</a></li>
-                            <li><a class="dropdown-item" href="/manager?action=change_agent&new_agent_id=2">Hana</a></li>
-                            <li><a class="dropdown-item" href="/manager?action=change_agent&new_agent_id=3">Kamal</a></li>
-                        </ul>
-                    </div>
-                    <!-- End Agents -->
-                </div>
-                <div class="col-2 themed-grid-col table_row"><a class="btn btn-primary" href="/manager?action=del&Ticket=12346" role="button">Close</a> <a class="btn btn-danger" href="/manager?action=wont-fix&Ticket=12348" role="button">Won't Fix</a></div>
+                <div class="col-1 themed-grid-col table_header">Ticket #</div>
+                <div class="col-1 themed-grid-col table_header">Priority</div>
+                <div class="col-2 themed-grid-col table_header">Customer</div>
+                <div class="col-3 themed-grid-col table_header">Title</div>
+                <div class="col-2 themed-grid-col table_header">Status</div>
+                <div class="col-1 themed-grid-col table_header">Agent</div>
+                <div class="col-2 themed-grid-col table_header">Actions</div>
             </div>
+            {% for ticket in unassignedTickets %}
+                <div class="row mb-3">
+                    <div class="col-1 themed-grid-col table_row"><a href="/ticket/{{ ticket.id }}">{{ ticket.id }}</a></div>
+                    <div class="col-1 themed-grid-col table_row">{{ ticket.priority }}</div>
+                    <div class="col-2 themed-grid-col table_row">{{ ticket.owner }}</div>
+                    <div class="col-3 themed-grid-col table_row">{{ ticket.subject }}</div>
+                    <div class="col-2 themed-grid-col table_row">
+                        <div class="col-1 themed-grid-col table_row">
+                            <!-- Status -->
+                            <div class="dropdown">
+                                <a class="btn btn-light dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    {{ ticket.status }}
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    {% for available_status in availableStatuses %}
+                                        <li><a class="dropdown-item" href="#">{{ available_status.name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <!-- End Status -->
+                        </div>
+                    </div>
+                    <div class="col-1 themed-grid-col table_row">
+                        <!-- Agents -->
+                        <div class="dropdown">
+                            <a class="btn btn-success dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                --
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                {% for available_agent in availableAgents %}
+                                    <li><a class="dropdown-item" href="#">{{ available_agent.name }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <!-- End Agents -->
+                    </div>
+                    <div class="col-2 themed-grid-col table_row"><a class="btn btn-primary" href="/manager?action=close&ticket={{ ticket.id }}" role="button">Close</a> <a class="btn btn-danger" href="/manager?action=wont-fix&ticket={{ ticket.id }}" role="button">Won't Fix</a></div>
+                </div>
+            {% endfor %}
 
-            <div class="row mb-3">
-                <div class="col-1 themed-grid-col table_row"><a href="/Ticket?12347">12347</a></div>
-                <div class="col-1 themed-grid-col table_row">2</div>
-                <div class="col-2 themed-grid-col table_row">Vodafone</div>
-                <div class="col-3 themed-grid-col table_row">Intermittent no connection</div>
-                <div class="col-2 themed-grid-col table_row">
-                    <!-- Status -->
-                    <div class="dropdown">
-                        <a class="btn btn-light dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Close Pending
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <li><a class="dropdown-item" href="/manager?action=change_status&new_status=agent_pending">Agent Pending</a></li>
-                            <li><a class="dropdown-item" href="/manager?action=change_status&new_status=customer_pending">Customer Pending</a></li>
-                            <li><a class="dropdown-item" href="/manager?action=change_status&new_status=solution_provided">Solution Provided</a></li>
-                        </ul>
-                    </div>
-                    <!-- End Status -->
-                </div>
-                <div class="col-1 themed-grid-col table_row">
-                    <!-- Agents -->
-                    <div class="dropdown">
-                        <a class="btn btn-success dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                            Kamal
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <li><a class="dropdown-item" href="/manager?action=change_agent&new_agent_id=1">Jose</a></li>
-                            <li><a class="dropdown-item" href="/manager?action=change_agent&new_agent_id=2">Hana</a></li>
-                            <li><a class="dropdown-item" href="/manager?action=change_agent&new_agent_id=3">Kamal</a></li>
-                        </ul>
-                    </div>
-                    <!-- End Agents -->
-                </div>
-                <div class="col-2 themed-grid-col table_row"><a class="btn btn-primary" href="/manager?action=del&Ticket=12347" role="button">Close</a> <a class="btn btn-danger" href="/manager?action=wont-fix&Ticket=12348" role="button">Won't Fix</a></div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-1 themed-grid-col table_row"><a href="/Ticket/?12348">12348</a></div>
-                <div class="col-1 themed-grid-col table_row">3</div>
-                <div class="col-2 themed-grid-col table_row">Zain</div>
-                <div class="col-3 themed-grid-col table_row">Billing incorrect</div>
-                <div class="col-2 themed-grid-col table_row">
-                    <!-- Status -->
-                    <div class="dropdown">
-                        <a class="btn btn-light dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Solution Provided
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <li><a class="dropdown-item" href="/manager?action=change_status&new_status=agent_pending">Agent Pending</a></li>
-                            <li><a class="dropdown-item" href="/manager?action=change_status&new_status=customer_pending">Customer Pending</a></li>
-                            <li><a class="dropdown-item" href="/manager?action=change_status&new_status=close_pending">Close Pending</a></li>
-                        </ul>
-                    </div>
-                    <!-- End Status -->
-                </div>
-                <div class="col-1 themed-grid-col table_row">
-                    <!-- Agents -->
-                    <div class="dropdown">
-                        <a class="btn btn-success dropdown-toggle" href="#" role="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
-                            Hana
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <li><a class="dropdown-item" href="/manager?action=change_agent&new_agent_id=1">Jose</a></li>
-                            <li><a class="dropdown-item" href="/manager?action=change_agent&new_agent_id=2">Hana</a></li>
-                            <li><a class="dropdown-item" href="/manager?action=change_agent&new_agent_id=3">Kamal</a></li>
-                        </ul>
-                    </div>
-                    <!-- End Agents -->
-                </div>
-                <div class="col-2 themed-grid-col table_row"><a class="btn btn-primary" href="/manager?action=del&Ticket=12348" role="button">Close</a> <a class="btn btn-danger" href="/manager?action=wont-fix&Ticket=12348" role="button">Won't Fix</a></div>
-            </div>
             <hr>
             <div class="row mb-3">
                 <div class="col-4 themed-grid-col table_row">{{ include('manager/_unassign_all.html.twig') }}</div>

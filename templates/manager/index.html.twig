@@ -3,12 +3,14 @@
 {% block title %}Hello ManagerController!{% endblock %}
 
 {% block body %}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
     <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/grid/">
 
 
     <!-- Bootstrap core CSS -->
-    <link href="/docs/5.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <link href="/docs/5.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
 
     <!-- Favicons -->
     <link rel="apple-touch-icon" href="/docs/5.0/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
@@ -33,6 +35,7 @@
             .bd-placeholder-img-lg {
                 font-size: 3.5rem;
             }
+
             .table_header {
                 border: 1px solid black;
             }
@@ -41,10 +44,13 @@
     <main>
         <div class="container">
             <div class="row mb-3">
-                <div class="col-4"><h1>Manager View ({{ loggedInManager }})</h1></div>
-                <div class="col-6 themed-grid-col"> </div>
-                <div class="col-2 themed-grid-col"><a class="btn btn-primary" href="{{ path('agent_new') }}" role="button">Create New Agent</a> </div>
-                <div class="col-2 themed-grid-col"><a class="btn btn-primary" href="{{ path('user_show') }}" role="button">All Agents</a> </div>
+                <div class="col-4"><h1>Manager View ({{ app.user.firstName }})</h1></div>
+                <div class="col-6 themed-grid-col"></div>
+                <div class="col-2 themed-grid-col">
+                    <a class="btn btn-primary" href="{{ path('agent_new') }}" role="button">Create New Agent</a>
+                    <a class="btn btn-primary" href="{{ path('user_show') }}" role="button">All Agents</a>
+                </div>
+
             </div>
 
             <p class="lead">Below is an overview of Tickets worked on by your team</p>
@@ -53,116 +59,36 @@
             <div class="row mb-3">
                 <div class="col-2 themed-grid-col table_header">Open Tickets: {{ openTickets }}</div>
                 <div class="col-2 themed-grid-col table_header">Closed Tickets: {{ closedTickets }}</div>
-                <div class="col-3 themed-grid-col table_header">Reopened Tickets: 1 (2,7%)</div>
+                <div class="col-3 themed-grid-col table_header">Reopened Tickets: {{ reopened }} ({{ ratio }}%)</div>
             </div>
 
             <!-- ACTIVE TICKETS -->
             <h2 class="mt-4">Active Tickets</h2>
             <p>These are tickets assigned to agents reporting to you. You can reassign it to any other agent.</p>
 
-            <div class="row mb-3">
-                <div class="col-1 themed-grid-col table_header">Ticket #</div>
-                <div class="col-1 themed-grid-col table_header">Priority</div>
-                <div class="col-2 themed-grid-col table_header">Customer</div>
-                <div class="col-3 themed-grid-col table_header">Title</div>
-                <div class="col-2 themed-grid-col table_header">Status</div>
-                <div class="col-1 themed-grid-col table_header">Agent</div>
-                <div class="col-2 themed-grid-col table_header">Actions</div>
-            </div>
-            {% for agent,ticket in ticketOverview %}
-            <div class="row mb-3">
-                <div class="col-1 themed-grid-col table_row"><a href="/ticket/{{ ticket.id }}">{{ ticket.id }}</a></div>
-                <div class="col-1 themed-grid-col table_row">{{ ticket.priority }}</div>
-                <div class="col-2 themed-grid-col table_row">{{ ticket.owner }}</div>
-                <div class="col-3 themed-grid-col table_row">{{ ticket.subject }}</div>
-                <div class="col-2 themed-grid-col table_row">
-                    <div class="col-1 themed-grid-col table_row">
-                        <!-- Status -->
-                        <div class="dropdown">
-                            <a class="btn btn-light dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                {{ ticket.status }}
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                {% for available_status in availableStatuses %}
-                                    <li><a class="dropdown-item" href="#">{{ available_status.name }}</a></li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        <!-- End Status -->
-                    </div>
-                </div>
-                <div class="col-1 themed-grid-col table_row">
-                    <!-- Agents -->
-                    <div class="dropdown">
-                        <a class="btn btn-success dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ agent }}
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            {% for available_agent in availableAgents %}
-                                <!-- /manager/update/{ticket}/agent/{agent} -->
-                                <li><a class="dropdown-item" href="#">{{ available_agent.name }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    <!-- End Agents -->
-                </div>
-                <div class="col-2 themed-grid-col table_row"><a class="btn btn-primary" href="/manager?action=close&ticket={{ ticket.id }}" role="button">Close</a> <a class="btn btn-danger" href="/manager?action=wont-fix&ticket={{ ticket.id }}" role="button">Won't Fix</a></div>
-            </div>
-            {% endfor %}
+            {{ include('manager/_dashboard_tablehead.html.twig') }}
+
+            {% if assignedTickets %}
+                {% for ticket in assignedTickets %}
+                    {{ include('manager/_dashboard_form.html.twig') }}
+                {% endfor %}
+            {% else %}
+                <div> no assigned tickets found</div>
+            {% endif %}
 
             <!-- UNASSIGNED TICKETS -->
             <h2 class="mt-4">Unassigned Tickets</h2>
             <p>These tickets are not yet assigned to any agent. Use the dropdown to assign it to an agent.</p>
 
-            <div class="row mb-3">
-                <div class="col-1 themed-grid-col table_header">Ticket #</div>
-                <div class="col-1 themed-grid-col table_header">Priority</div>
-                <div class="col-2 themed-grid-col table_header">Customer</div>
-                <div class="col-3 themed-grid-col table_header">Title</div>
-                <div class="col-2 themed-grid-col table_header">Status</div>
-                <div class="col-1 themed-grid-col table_header">Agent</div>
-                <div class="col-2 themed-grid-col table_header">Actions</div>
-            </div>
-            {% for ticket in unassignedTickets %}
-                <div class="row mb-3">
-                    <div class="col-1 themed-grid-col table_row"><a href="/ticket/{{ ticket.id }}">{{ ticket.id }}</a></div>
-                    <div class="col-1 themed-grid-col table_row">{{ ticket.priority }}</div>
-                    <div class="col-2 themed-grid-col table_row">{{ ticket.owner }}</div>
-                    <div class="col-3 themed-grid-col table_row">{{ ticket.subject }}</div>
-                    <div class="col-2 themed-grid-col table_row">
-                        <div class="col-1 themed-grid-col table_row">
-                            <!-- Status -->
-                            <div class="dropdown">
-                                <a class="btn btn-light dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    {{ ticket.status }}
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                    {% for available_status in availableStatuses %}
-                                        <li><a class="dropdown-item" href="#">{{ available_status.name }}</a></li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            <!-- End Status -->
-                        </div>
-                    </div>
-                    <div class="col-1 themed-grid-col table_row">
-                        <!-- Agents -->
-                        <div class="dropdown">
-                            <a class="btn btn-success dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                --
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                {% for available_agent in availableAgents %}
-                                    <li><a class="dropdown-item" href="#">{{ available_agent.name }}</a></li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        <!-- End Agents -->
-                    </div>
-                    <div class="col-2 themed-grid-col table_row"><a class="btn btn-primary" href="/manager?action=close&ticket={{ ticket.id }}" role="button">Close</a> <a class="btn btn-danger" href="/manager?action=wont-fix&ticket={{ ticket.id }}" role="button">Won't Fix</a></div>
-                </div>
-            {% endfor %}
+            {{ include('manager/_dashboard_tablehead.html.twig') }}
 
+            {% if unassignedTickets %}
+                {% for ticket in unassignedTickets %}
+                    {{ include('manager/_dashboard_form.html.twig') }}
+                {% endfor %}
+            {% else %}
+                <div> no unassigned tickets found</div>
+            {% endif %}
             <hr>
             <div class="row mb-3">
                 <div class="col-4 themed-grid-col table_row">{{ include('manager/_unassign_all.html.twig') }}</div>
@@ -170,5 +96,7 @@
 
         </div>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8"
+            crossorigin="anonymous"></script>
 {% endblock %}

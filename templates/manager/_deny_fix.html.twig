@@ -1,8 +1,9 @@
 {{ form_start(form) }}
 
         {{ form_row(form.content) }}
-        {{ form_row(form.private) }}
+        {{ form_row(form.private,{ 'attr': {'disabled': 'true'} }) }}
 
 <button class="btn">{{ button_label|default("Won't Fix") }}</button>
 
 {{ form_end(form) }}
+<a href="{{ path('manager_index') }}">Return</a>

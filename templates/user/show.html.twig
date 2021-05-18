@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User{% endblock %}
+
+{% block body %}
+    <h1>User</h1>
+
+    <table class="table">
+        {% for user in users %}
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ user.id }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ user.email }}</td>
+            </tr>
+            <tr>
+                <th>FirstName</th>
+                <td>{{ user.firstName }}</td>
+            </tr>
+            <tr>
+                <th>LastName</th>
+                <td>{{ user.lastName }}</td>
+            </tr>
+            <tr>
+                <th>JoinedDate</th>
+                <td>{{ user.joinedDate ? user.joinedDate|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>AgentLevel</th>
+                <td>{{ user.agentLevel }}</td>
+            </tr>
+            <tr>
+                <th>ClosedTickets</th>
+                <td>{{ user.closedTickets }}</td>
+            </tr>
+            <tr>
+                <th>ReopenedTickets</th>
+                <td>{{ user.reopenedTickets }}</td>
+            </tr>
+            <tr>
+                <th>EscalatedTickets</th>
+                <td>{{ user.escalatedTickets }}</td>
+            </tr>
+            <tr>
+                <th>edit agent</th>
+                <td><a href="{{ path('user_edit', {'id': user.id}) }}">edit</a></td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+
+    <a href="{{ path('manager_index') }}">back to list</a>
+
+
+  {# {{ include('user/_delete_form.html.twig') }} #}
+
+{% endblock %}

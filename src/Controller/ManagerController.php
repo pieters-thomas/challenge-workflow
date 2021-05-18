@@ -2,12 +2,13 @@
 
 namespace App\Controller;
 
-
+use App\Entity\Comment;
 use App\Entity\Ticket;
 use App\Entity\User;
+use App\Form\CommentType;
+use App\Form\TicketManagerType;
 use App\Repository\TicketRepository;
 use App\Repository\UserRepository;
-use PhpParser\Node\Expr\Array_;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,10 +23,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class ManagerController extends AbstractController
 {
-    //#[Route('/manager', name: 'manager')]
-    //public function index(): Response
-
     /**
+     * @param UserRepository $userRepository
      * @param TicketRepository $ticketRepository
      * @param UserInterface $user
      * @return Response
@@ -33,10 +32,9 @@ class ManagerController extends AbstractController
     #[Route('/manager', name: 'manager_index', methods: ['GET', 'POST'])]
     public function dashboard(UserRepository $userRepository, TicketRepository $ticketRepository, UserInterface $user): Response
     {
-
         if($_POST !== null)
         {
-            //todo Reaplace with and add logic to properly handle form
+            //todo Replace with and add logic to properly handle form
             /** @var Ticket $ticket $ticket */
             $ticket = $_POST['ticket'];
             $ticket->setPriority($_POST['priority']);
@@ -82,21 +80,6 @@ class ManagerController extends AbstractController
         ]);
     }
 
-
-    public function getTicketsForAgent(TicketRepository $ticketRepository, UserInterface $user): array
-    {
-        $tickets_for_agent = [];
-        /** @var User $user */
-        $tickets = $ticketRepository->findall();
-        foreach ( $tickets as $ticket ){
-            /** @var Ticket $ticket */
-            if ($ticket->getAssignedAgent() == $user)
-                $tickets_for_agent[] = $ticket;
-        }
-
-        return $tickets_for_agent;
-    }
-
     #[Route('/un-assign-all', name: 'unassign_all')]
     public function unAssignAll(TicketRepository $repository): Response
     {
@@ -118,16 +101,56 @@ class ManagerController extends AbstractController
 
     }
 
-    #[Route('/dashboard/{id}/{data}', name: 'manager_changes', methods: ['post'])]
-    public function manageTickets(TicketRepository $repository, Ticket $ticket, Request $request, Array $data): Response
-    {
-        var_dump($data);
-        $ticket->setAssignedAgent($_POST['agent']);
-        $ticket->setStatus(2);
-        $ticket->setPriority($_POST['priority']);
-        $this->getDoctrine()->getManager()->flush();
 
-        return $this->redirectToRoute('manager_index');
+    #[Route('/will-not-fix/', name: 'will-not-fix', methods: ['post'])]
+    public function Deny (Ticket $ticket, Request $request): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $comment = new Comment();
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $comment->setUserId($user);
+            $comment->setTicketId($ticket);
+
+            if (!$comment->getPrivate()) {
+                $ticket->setStatus(5);
+                $ticket->setAssignedAgent(null);
+                $ticket->setClosedBy($user);
+                $ticket->setClosed(date_create(date("Y-m-d H:i:s")));
+            }
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($ticket);
+            $entityManager->persist($comment);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('manager');
+        }
+        return $this->render('manager/show.html.twig', [
+            'ticket' => $ticket,
+            'form' => $form->createView()]);
+
     }
 
+    #[Route('/ticket/{id}/edit', name: 'manager_edit_ticket', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Ticket $ticket): Response
+    {
+        $form = $this->createForm(TicketManagerType::class, $ticket);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->redirectToRoute('manager');
+        }
+
+        return $this->render('manager/edit.html.twig', [
+            'ticket' => $ticket,
+            'form' => $form->createView(),
+        ]);
+    }
 }

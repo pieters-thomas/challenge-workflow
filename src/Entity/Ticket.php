@@ -15,7 +15,6 @@ class Ticket
     public const OPEN = 1;
     public const CLOSED = 4;
     public const WONTFIX = 5;
-
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

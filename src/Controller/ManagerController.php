@@ -7,18 +7,20 @@ use App\Entity\Ticket;
 use App\Entity\User;
 use App\Repository\TicketRepository;
 use App\Repository\UserRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+/**
+ * @IsGranted ("ROLE_MANAGER")
+ */
 class ManagerController extends AbstractController
 {
-    //#[Route('/manager', name: 'manager')]
-    //public function index(): Response
-
     /**
+     * @param UserRepository $userRepository
      * @param TicketRepository $ticketRepository
      * @param UserInterface $user
      * @return Response
@@ -28,16 +30,13 @@ class ManagerController extends AbstractController
     {
         $role = $user->getRoles()[0];
 
-        // This page is only available for Managers
-        if($role != "ROLE_MANAGER")
-        {
-            return $this->redirectToRoute('app_login');
-        }
 
         $open_tickets = 0;
         $closed_tickets = 0;
-
-        // find the agents resporting to this manager
+        /**
+         * @var User $user
+         */
+        // find the agents reporting to this manager
         $agents = $this->getAgentsForManager($userRepository, $user);
         $all_agents = $this->getAllAgents($userRepository);
 

@@ -104,7 +104,7 @@ class LoginAuthenticator extends AbstractFormLoginAuthenticator implements Passw
         }
 
         if ($mainRole === ['ROLE_MANAGER']) {
-            return new RedirectResponse($this->urlGenerator->generate('manager'));
+            return new RedirectResponse($this->urlGenerator->generate('manager_index'));
         }
         //@todo change this to agent home later.
         return new RedirectResponse($this->urlGenerator->generate('customer_index'));

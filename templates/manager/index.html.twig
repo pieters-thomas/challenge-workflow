@@ -43,7 +43,8 @@
             <div class="row mb-3">
                 <div class="col-4"><h1>Manager View ({{ loggedInManager }})</h1></div>
                 <div class="col-6 themed-grid-col"> </div>
-                <div class="col-2 themed-grid-col"><a class="btn btn-primary" href="/manager?action=create-new-agent" role="button">Create New Agent</a> </div>
+                <div class="col-2 themed-grid-col"><a class="btn btn-primary" href="{{ path('agent_new') }}" role="button">Create New Agent</a> </div>
+                <div class="col-2 themed-grid-col"><a class="btn btn-primary" href="{{ path('user_show') }}" role="button">All Agents</a> </div>
             </div>
 
             <p class="lead">Below is an overview of Tickets worked on by your team</p>

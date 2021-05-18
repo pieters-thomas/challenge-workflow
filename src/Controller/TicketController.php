@@ -36,7 +36,7 @@ class TicketController extends AbstractController
 //            'tickets' => $ticketRepository->findBy(['ticketOwner' => $this->getUser()]),
 //        ]);
 //    }
-
+//
 //    #[Route('/new', name: 'ticket_new', methods: ['GET', 'POST'])]
 //    public function new(Request $request): Response
 //    {

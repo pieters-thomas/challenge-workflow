@@ -1,0 +1,29 @@
+<form method="post">
+    <div class="col-1 themed-grid-col table_row d-inline-block"><a href="{{ path('manager_index') }}">{{ ticket.id }}</a></div>
+    <input type="hidden" id="ticket" name="ticket" value="{{ ticket }}">
+    <label class="col-1 themed-grid-col table_row d-inline-block">
+        <select id="priority" name="priority">
+            <option value="{{ ticket.priority??null }}">{{ ticket.priority??null }}</option>
+            {% for i in range(1, 5) %}
+                <option value="{{ i }}">{{ i }}</option>
+            {% endfor %}
+        </select>
+    </label>
+
+    <div class="col-2 themed-grid-col table_row d-inline-block">{{ ticket.ticketOwner }}</div>
+    <div class="col-3 themed-grid-col table_row d-inline-block">{{ ticket.subject }}</div>
+    <div class="col-2 themed-grid-col table_row d-inline-block">{{ ticket.status }}</div>
+
+    <label>
+        <select id="agent" name="agent" class="col-1 themed-grid-col table_row d-inline-block">
+            <option value="{{ ticket.assignedAgent??null }}">{{ ticket.assignedAgent??null }}</option>
+            {% for agent in agents %}
+                <option value="{{ agent }}">{{ agent }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <div class="col-2 themed-grid-col table_row d-inline-block">
+        <button type="submit" class="btn btn-warning d-inline-block">Update</button>
+        <a class="btn btn-danger d-inline-block" href="/manager?action=wont-fix&ticket={{ ticket.id }}" role="button">Won't Fix</a>
+    </div>
+</form>
